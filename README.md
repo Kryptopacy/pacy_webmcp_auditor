@@ -16,10 +16,10 @@ Built from webmcp.com's published scorecard methodology (Usability 60% · Covera
 
 ```bash
 # pick this repo interactively
-npx skills add <owner>/<repo>
+npx skills add Kryptopacy/pacy_webmcp_auditor
 
 # or install this skill directly, globally
-npx skills add <owner>/<repo> --skill webmcp-integration -g
+npx skills add Kryptopacy/pacy_webmcp_auditor --skill webmcp-integration -g
 ```
 
 ### Without the CLI
@@ -28,11 +28,11 @@ Copy the `webmcp-integration/` folder into your agent's skill directory:
 
 ```bash
 # Claude Code / OpenCode / most agents (user-global)
-git clone https://github.com/<owner>/<repo>.git
-cp -r <repo>/webmcp-integration ~/.agents/skills/webmcp-integration
+git clone https://github.com/Kryptopacy/pacy_webmcp_auditor.git
+cp -r pacy_webmcp_auditor/webmcp-integration ~/.agents/skills/webmcp-integration
 
 # or project-scoped
-cp -r <repo>/webmcp-integration .agents/skills/webmcp-integration
+cp -r pacy_webmcp_auditor/webmcp-integration .agents/skills/webmcp-integration
 ```
 
 ZCode also discovers `~/.zcode/skills/`; Claude Code additionally reads `~/.claude/skills/`. Pick whichever your agent documents.
@@ -40,7 +40,7 @@ ZCode also discovers `~/.zcode/skills/`; Claude Code additionally reads `~/.clau
 ### Use once, without installing
 
 ```bash
-npx skills use <owner>/<repo>@webmcp-integration | claude
+npx skills use Kryptopacy/pacy_webmcp_auditor@webmcp-integration | claude
 ```
 
 ## Layout
