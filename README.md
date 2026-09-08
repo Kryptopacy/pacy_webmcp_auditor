@@ -1,5 +1,7 @@
 # webmcp-integration — an agent skill for WebMCP
 
+[![skills.sh](https://skills.sh/b/Kryptopacy/pacy_webmcp_auditor)](https://skills.sh/Kryptopacy/pacy_webmcp_auditor)
+
 A packaged [Agent Skill](https://skills.sh) that lets any coding agent (Claude Code, Codex, Cursor, OpenCode, ZCode, and 70+ more) **add, audit, and perfect WebMCP integrations** — the W3C API that turns a website into an MCP server AI agents can operate.
 
 Built from webmcp.com's published scorecard methodology (Usability 60% · Coverage 20% · Quality 20%), the [W3C WebMCP spec](https://webmachinelearning.github.io/webmcp/), and Chrome's implementation docs. Multi-dialect by design: it targets both the WG draft (`document.modelContext.registerTool`) and the CG spec (`navigator.modelContext.provideContext`) plus polyfills, so integrations work everywhere WebMCP can.
