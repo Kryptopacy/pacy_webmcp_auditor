@@ -16,7 +16,9 @@
     probedAt: new Date().toISOString(),
     gates: {
       secureContext: isSecureContext,
-      originIsolated: crossOriginIsolated,
+      // crossOriginIsolated (COOP/COEP) is NOT a WebMCP gate — false is normal.
+      // The origin-isolation gate is document.domain relaxation, tracked below.
+      crossOriginIsolated: crossOriginIsolated,
       documentDomainRelaxed: document.domain !== location.hostname || null,
       documentModelContext: 'modelContext' in document,
       navigatorModelContext: 'modelContext' in navigator,
