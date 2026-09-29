@@ -47,7 +47,11 @@ Every tool is sorted into one of three categories — a trust ladder for how fre
 Per tool:
 - [ ] `name`: `snake_case`, verb-first, unique across the page, stable across deploys (`search_flights`, `add_to_cart`, `get_order_status`; not `search-web`, `do_thing`, `handleData`)
 - [ ] `description`: 1–3 sentences — what it does, when to call it, what it returns; side effects stated explicitly ("read-only", "adds to cart (reversible)", "places a paid order"); no imperative/instructional language, no "SYSTEM:", no keyword stuffing
-- [ ] `inputSchema`: present; `type: "object"`; every property has `type` + `description`; `required` list correct; constraints (`enum`, `minimum`/`maximum`, `format`) where values are constrained; serializable (no circular refs — `registerTool` rejects)
+- [ ] `inputSchema`: present; `type: "object"`; every property has `type` + `description`; `required` list correct; constraints (`enum`, `minimum`/`maximum`, `format`) where values are constrained; serializable (no circular refs — `registerTool` rejects); no dead/unused properties that `execute` ignores
+- [ ] `outputSchema` (if defined): all return fields promised in prose exist in `outputSchema.properties` (output claim parity)
+- [ ] `constraint agreement`: prose descriptions strictly align with `enum` constraints; no claims that unlisted variants are normalized against a strict `enum`
+- [ ] `empty invocation`: if all parameters on a tool are optional, the default return behavior of calling `{}` is explicitly documented
+- [ ] `precedence`: polymorphic arguments (e.g. ID vs. natural title) state resolution precedence
 - [ ] `annotations` truthful and matching the trust ladder; `untrustedContentHint` on UGC-returning tools
 - [ ] `execute` honors `options.signal`; validates input; returns structured JSON; throws `Error` with an agent-readable message; no secrets/PII in outputs; UGC sanitized
 - [ ] `title` set and localized if the tool may appear in native UI
@@ -55,7 +59,7 @@ Per tool:
 Per page/app:
 - [ ] Registration runs on page load, not behind user interaction (`api-empty`)
 - [ ] SSR-safe: client-only registration (`typeof document !== 'undefined'`, `useEffect`/`onMounted`); StrictMode double-invoke handled
-- [ ] SPA routes: stale tools unregistered (AbortController per route); no duplicate names
+- [ ] SPA routes: stale tools unregistered (AbortController per route); no duplicate names across components or route transitions
 - [ ] Every core journey covered end-to-end (e.g., search → details → cart → checkout); every meaningful page has tools
 - [ ] Security gates hold: HTTPS, no `document.domain`/`Origin-Agent-Cluster: ?0`, Permissions-Policy `tools` (iframe `allow="tools"` / header grants for partners)
 - [ ] Declarative forms: `toolname` + `tooldescription` set; every control has `name` + `toolparamdescription`; `required` marked; `toolautosubmit` deliberately chosen (omit it for consequential forms); `submit` handler answers `event.agentInvoked` with `respondWith()`
@@ -75,7 +79,7 @@ Rules for the live pass:
 
 1. **Quality (20%):** per tool, three binary checks — real description / defined schema / conventional snake_case name. Tool score = passes/3; surface score = average. (Max contribution: full 20% at 3/3 across the board.)
 2. **Coverage (20%):** pages with tools, journey completeness. Single homepage tool ≈ floor; each additional meaningful page adds; a fully walkable core journey ≈ full marks.
-3. **Usability (60%):** assign 1–5 via the strict scale after simulating an agent walkthrough — could an agent complete each journey using only names/descriptions/schemas/returns? Deduct for ambiguity, missing constraints, guess-inducing returns, hint contradictions.
+3. **Usability (60%):** assign 1–5 via the strict scale after simulating an agent walkthrough — could an agent complete each journey using only names/descriptions/schemas/returns? Deduct for ambiguity, missing constraints, guess-inducing returns, hint contradictions, schema-vs-prose contradictions (e.g. normalization claims over strict enums), and output claim mismatches.
 4. **Overall:** weighted blend → letter via the table above.
 
 Be strict: 5s are rare by design; a solid, honest surface lands B+/A−.

@@ -95,10 +95,15 @@ Scanners and agent clients *infer* each tool's category (Answer / Action / Sensi
 
 **Quality (20% of grade) — mechanical, per tool, averaged:**
 1. A real description — 1–3 sentences covering what it does, when to call it, what it returns. A one-word stub fails. Never embed instructions ("SYSTEM: …", "always do X after calling") — that's prompt injection and scanners look for it.
-2. A defined `inputSchema` — `{type: "object", properties: {…}, required: […]}` with a `type` and a `description` on every property; `enum`/`minimum`/`maximum` where values are constrained.
+2. A defined `inputSchema` — `{type: "object", properties: {…}, required: […]}` with a `type` and a `description` on every property; `enum`/`minimum`/`maximum` where values are constrained. **Zero dead parameters:** prune speculative properties that `execute` does not actively consume.
 3. A conventional `snake_case` name — verb-first (`search_flights`, `add_to_cart`, `get_order_status`), unique per page, no hyphens, no vagueness (`do_thing`, `handle_data`).
 
 **Usability (60%) — an agent-reviewer judges the whole surface 1–5:** 5 = comprehensive coverage, precise schemas, unambiguous names (genuinely rare); 3 = usable but with real gaps (the typical good surface); 1 = an agent would struggle to call these reliably.
+*Contract precision rules (prevents rubric findings across all grades):*
+- **Schema–description agreement:** Never claim acceptance or normalization for tokens outside an `enum` (e.g. claiming `"auto"` or `"dark-mode"` is normalized while schema enforces `enum: ["dark", "light"]`). Validators reject unlisted tokens at the boundary, making the documentation a contradictory contract.
+- **Output claim parity:** Every return field promised in prose (*"returns items, subtotal, and taxes"*) must explicitly exist in `outputSchema.properties`.
+- **Empty-call contract:** If all parameters on an inspection/read tool are optional, explicitly document what calling `{}` returns (e.g. *"All filters are optional; an empty call returns the current workspace summary."*).
+- **Polymorphic precedence:** If an argument accepts multiple identifier formats (e.g. UUID vs. title/slug), state the resolution precedence order.
 
 **Coverage (20%) — how much of the site is exposed:** one page with tools is baseline; each additional page raises it. Great surfaces enable **complete journeys** (browse → select → cart → checkout), not just the homepage.
 
@@ -126,8 +131,10 @@ Run in this order — static findings tell you where to point the live probe.
 - no queue/polyfill path → site is silent (or crashes) where WebMCP is absent
 - SSR components registering on server → silent no-op or crash
 - duplicate names across routes without unregister → collisions
-- `fetch` without `signal`, `execute` returning raw HTML/text → usability penalty
 - hints contradicting descriptions (`readOnlyHint: true` + "adds to cart")
+- descriptions contradicting schema constraints (e.g. claiming unlisted variants are normalized against a strict `enum`)
+- descriptions promising output fields that are absent from `outputSchema`
+- dead/speculative parameters declared in `inputSchema` that `execute` ignores
 
 **2. Live probe.** Open the deployed site (HTTPS) and run `scripts/webmcp-probe.js` in DevTools (or via browser automation). It reports detection gates, the tool inventory with per-tool quality flags, and declarative forms. Never `executeTool` a tool without `readOnlyHint` — audit everything else, execute only read-only ones.
 
